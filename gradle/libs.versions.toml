@@ -1,0 +1,17 @@
+[versions]
+kotlin = "2.1.20"
+gson = "2.13.2"
+guava = "33.5.0-jre"
+adventure-api = "4.23.0"
+adventure-gson = "4.23.0"
+jetbrains-annotations = "26.0.2"
+
+[libraries]
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
+adventure-text-serializer-gson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure-gson" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

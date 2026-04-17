@@ -3,7 +3,7 @@ package kr.moonshine.datapack;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public final class PackMeta extends Generator {
+public final class PackMeta {
 
     private final String description;
 
@@ -15,13 +15,7 @@ public final class PackMeta extends Generator {
         return new PackMeta(description);
     }
 
-    @Override
-    public String entryPath(String namespace) {
-        return "pack.mcmeta";
-    }
-
-    @Override
-    protected JsonElement toJson(MinecraftVersion version) {
+    public JsonElement toJson(MinecraftVersion version) {
         JsonObject pack = new JsonObject();
         pack.add("pack_format", DatapackFormats.of(version).toJson());
         pack.addProperty("description", description);

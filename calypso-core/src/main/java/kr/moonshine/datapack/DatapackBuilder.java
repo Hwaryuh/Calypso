@@ -1,13 +1,13 @@
 package kr.moonshine.datapack;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 public final class DatapackBuilder {
     private static final Gson GSON = new GsonBuilder()
@@ -35,17 +35,21 @@ public final class DatapackBuilder {
         return new Datapack(entries());
     }
 
-    private Map<String, byte[]> entries() {
-        Map<String, byte[]> map = Maps.newLinkedHashMap();
-        map.put(packMeta.entryPath(namespace), serialize(packMeta));
+    private ImmutableMap<@NotNull String, byte @NotNull []> entries() {
+        ImmutableMap.Builder<@NotNull String, byte @NotNull []> builder = ImmutableMap.builder();
+        builder.put("pack.mcmeta", serialize(packMeta.toJson(version)));
         for (Generator generator : generators) {
-            map.put(generator.entryPath(namespace), serialize(generator));
+            builder.put(generator.entryPath(namespace), serialize(generator));
         }
-        return map;
+        return builder.build();
     }
 
     private byte[] serialize(Generator generator) {
-        return GSON.toJson(generator.toJson(version)).getBytes(StandardCharsets.UTF_8);
+        return serialize(generator.toJson(version));
+    }
+
+    private byte[] serialize(com.google.gson.JsonElement json) {
+        return GSON.toJson(json).getBytes(StandardCharsets.UTF_8);
     }
 
     public static DatapackBuilder of(String namespace, MinecraftVersion version, String description) {

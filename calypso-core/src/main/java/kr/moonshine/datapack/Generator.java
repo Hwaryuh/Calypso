@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
+import java.util.List;
+
 public abstract class Generator {
 
     public abstract String entryPath(String namespace);
@@ -15,5 +17,19 @@ public abstract class Generator {
 
     protected static JsonElement serializeComponent(Component component) {
         return GsonComponentSerializer.gson().serializeToTree(component);
+    }
+
+    public abstract static class Builder<G extends Generator, B extends Builder<G, B>> {
+
+        protected abstract List<FieldValue<?>> requiredFieldValues();
+
+        protected abstract G buildInternal();
+
+        public final G build() {
+            for (FieldValue<?> fieldValue : requiredFieldValues()) {
+                fieldValue.validateRequired();
+            }
+            return buildInternal();
+        }
     }
 }

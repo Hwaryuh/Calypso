@@ -3,15 +3,54 @@ package kr.moonshine.datapack.trim;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import kr.moonshine.datapack.FieldValue;
 import kr.moonshine.datapack.Generator;
-import kr.moonshine.datapack.util.JsonHelper;
+import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
 import kr.moonshine.datapack.ResourceLocation;
 import net.kyori.adventure.text.Component;
 
+import java.util.List;
 import java.util.Map;
 
 public final class TrimMaterial extends Generator {
+
+    private static final String ENTRY_PATH = "data/%s/trim_material/%s.json";
+
+    private static final JsonField<String> ASSET_NAME = JsonField.ofString("asset_name").required();
+    private static final JsonField<JsonElement> DESCRIPTION = JsonField.ofElement("description").required();
+    private static final JsonField<String> INGREDIENT =
+        JsonField.ofString(
+            "ingredient",
+            null,
+            MinecraftVersion.V1_21_5
+        );
+    private static final JsonField<Number> ITEM_MODEL_INDEX =
+        JsonField.ofNumber(
+            "item_model_index",
+            null,
+            MinecraftVersion.V1_21_4
+        );
+    private static final JsonField<Map<ArmorMaterial, String>> OVERRIDE_ARMOR_MATERIALS =
+        JsonField.of(
+            "override_armor_materials",
+            map -> {
+                JsonObject obj = new JsonObject();
+                map.forEach((mat, palette) -> obj.addProperty(mat.getId(), palette));
+                return obj;
+            },
+            null, MinecraftVersion.V1_21_4
+        );
+    private static final JsonField<Map<String, String>> OVERRIDE_ARMOR_ASSETS =
+        JsonField.of(
+            "override_armor_assets",
+            map -> {
+                JsonObject obj = new JsonObject();
+                map.forEach(obj::addProperty);
+                return obj;
+            },
+            MinecraftVersion.V1_21_4, null
+        );
 
     private final String fileName;
     private final String assetName;
@@ -33,61 +72,27 @@ public final class TrimMaterial extends Generator {
 
     @Override
     public String entryPath(String namespace) {
-        return "data/%s/trim_material/%s.json".formatted(namespace, fileName);
+        return ENTRY_PATH.formatted(namespace, fileName);
     }
 
     @Override
     protected JsonElement toJson(MinecraftVersion version) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("asset_name", assetName);
-        obj.add("description", serializeComponent(description));
-
-        JsonHelper.addVersioned(
-            obj,
-            "ingredient",
-            ingredient != null ? ingredient.toString() : null,
-            version,
-            null,
-            MinecraftVersion.V1_21_5
-        );
-
-        JsonHelper.addVersioned(
-            obj,
-            "item_model_index",
-            itemModelIndex,
-            version,
-            null,
-            MinecraftVersion.V1_21_4
-        );
-
-        if (overrideArmorMaterials != null) {
-            MinecraftVersion.require(version, null, MinecraftVersion.V1_21_4, "override_armor_materials");
-            JsonObject overrides = new JsonObject();
-            overrideArmorMaterials.forEach((mat, palette) -> overrides.addProperty(mat.getId(), palette));
-            obj.add("override_armor_materials", overrides);
-        }
-
-        if (overrideArmorAssets != null) {
-            MinecraftVersion.require(version, MinecraftVersion.V1_21_4, null, "override_armor_assets");
-            JsonObject overrides = new JsonObject();
-            overrideArmorAssets.forEach(overrides::addProperty);
-            obj.add("override_armor_assets", overrides);
-        }
-
+        ASSET_NAME.write(obj, assetName);
+        DESCRIPTION.write(obj, serializeComponent(description));
+        INGREDIENT.write(obj, ingredient != null ? ingredient.toString() : null, version);
+        ITEM_MODEL_INDEX.write(obj, itemModelIndex, version);
+        OVERRIDE_ARMOR_MATERIALS.write(obj, overrideArmorMaterials, version);
+        OVERRIDE_ARMOR_ASSETS.write(obj, overrideArmorAssets, version);
         return obj;
-    }
-
-    @Override
-    public void validate(MinecraftVersion version) {
-        if (assetName == null) throw new IllegalStateException("assetName is required");
-        if (description == null) throw new IllegalStateException("description is required");
     }
 
     public static Builder builder(String fileName) {
         return new Builder(fileName);
     }
 
-    public static final class Builder {
+    public static final class Builder extends Generator.Builder<TrimMaterial, Builder> {
+
         private final String fileName;
         private String assetName;
         private Component description;
@@ -130,7 +135,16 @@ public final class TrimMaterial extends Generator {
             return this;
         }
 
-        public TrimMaterial build() {
+        @Override
+        protected List<FieldValue<?>> requiredFieldValues() {
+            return List.of(
+                FieldValue.of(ASSET_NAME, assetName),
+                FieldValue.of(DESCRIPTION, description != null ? serializeComponent(description) : null)
+            );
+        }
+
+        @Override
+        protected TrimMaterial buildInternal() {
             return new TrimMaterial(this);
         }
     }

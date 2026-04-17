@@ -2,13 +2,28 @@ package kr.moonshine.datapack.trim;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import kr.moonshine.datapack.FieldValue;
 import kr.moonshine.datapack.Generator;
-import kr.moonshine.datapack.util.JsonHelper;
+import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
 import kr.moonshine.datapack.ResourceLocation;
 import net.kyori.adventure.text.Component;
 
+import java.util.List;
+
 public final class TrimPattern extends Generator {
+
+    private static final String ENTRY_PATH = "data/%s/trim_pattern/%s.json";
+
+    private static final JsonField<String> ASSET_ID = JsonField.ofString("asset_id").required();
+    private static final JsonField<JsonElement> DESCRIPTION = JsonField.ofElement("description").required();
+    private static final JsonField<String> TEMPLATE_ITEM =
+        JsonField.ofString(
+            "template_item",
+            null,
+            MinecraftVersion.V1_21_5
+        );
+    private static final JsonField<Boolean> DECAL = JsonField.ofBoolean("decal");
 
     private final String fileName;
     private final ResourceLocation assetId;
@@ -26,26 +41,16 @@ public final class TrimPattern extends Generator {
 
     @Override
     public String entryPath(String namespace) {
-        return "data/%s/trim_pattern/%s.json".formatted(namespace, fileName);
+        return ENTRY_PATH.formatted(namespace, fileName);
     }
 
     @Override
     protected JsonElement toJson(MinecraftVersion version) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("asset_id", assetId.toString());
-        obj.add("description", serializeComponent(description));
-
-        JsonHelper.addVersioned(
-            obj,
-            "template_item",
-            templateItem != null ? templateItem.toString() : null,
-            version, null, MinecraftVersion.V1_21_5
-        );
-
-        if (decal != null) {
-            obj.addProperty("decal", decal);
-        }
-
+        ASSET_ID.write(obj, assetId != null ? assetId.toString() : null);
+        DESCRIPTION.write(obj, serializeComponent(description));
+        TEMPLATE_ITEM.write(obj, templateItem != null ? templateItem.toString() : null, version);
+        DECAL.write(obj, decal);
         return obj;
     }
 
@@ -53,7 +58,8 @@ public final class TrimPattern extends Generator {
         return new Builder(fileName);
     }
 
-    public static final class Builder {
+    public static final class Builder extends Generator.Builder<TrimPattern, Builder> {
+
         private final String fileName;
         private ResourceLocation assetId;
         private Component description;
@@ -89,9 +95,16 @@ public final class TrimPattern extends Generator {
             return this;
         }
 
-        public TrimPattern build() {
-            if (assetId == null) throw new IllegalStateException("assetId is required");
-            if (description == null) throw new IllegalStateException("description is required");
+        @Override
+        protected List<FieldValue<?>> requiredFieldValues() {
+            return List.of(
+                FieldValue.of(ASSET_ID, assetId != null ? assetId.toString() : null),
+                FieldValue.of(DESCRIPTION, description != null ? serializeComponent(description) : null)
+            );
+        }
+
+        @Override
+        protected TrimPattern buildInternal() {
             return new TrimPattern(this);
         }
     }

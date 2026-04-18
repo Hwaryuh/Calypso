@@ -7,7 +7,7 @@ import java.util.Map;
 
 public final class DatapackFormats {
 
-    private static final Map<MinecraftVersion, DatapackFormat> MAP = Maps.newTreeMap();
+    private static final Map<MinecraftVersion, DatapackFormat> MAP = Maps.newHashMap();
 
     static {
         MAP.put(MinecraftVersion.V1_21_4, DatapackFormat.of(61));

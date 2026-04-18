@@ -26,8 +26,8 @@ public final class PackMeta {
 
         if (version.isAtLeast(MinecraftVersion.V1_21_9)) {
             DatapackFormat format = DatapackFormats.of(version);
-            pack.add("min_format", toArray(format));
-            pack.add("max_format", toArray(format));
+            pack.add("min_format", format.toJson());
+            pack.add("max_format", format.toJson());
         } else {
             pack.add("pack_format", DatapackFormats.of(version).toJson());
         }
@@ -37,12 +37,5 @@ public final class PackMeta {
         JsonObject root = new JsonObject();
         root.add("pack", pack);
         return root;
-    }
-
-    private static JsonArray toArray(DatapackFormat format) {
-        JsonArray arr = new JsonArray();
-        arr.add(format.major());
-        arr.add(format.minor());
-        return arr;
     }
 }

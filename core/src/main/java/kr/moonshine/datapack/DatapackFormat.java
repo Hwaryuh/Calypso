@@ -1,9 +1,10 @@
 package kr.moonshine.datapack;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
+
+import java.math.BigDecimal;
 
 public record DatapackFormat(
     int major,
@@ -20,7 +21,7 @@ public record DatapackFormat(
 
     public @NotNull JsonElement toJson() {
         if (minor == 0) return new JsonPrimitive(major);
-        return JsonParser.parseString(major + "." + minor);
+        return new JsonPrimitive(new BigDecimal(major + "." + minor));
     }
 
     @Override

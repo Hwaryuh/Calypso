@@ -1,9 +1,10 @@
 package kr.moonshine.datapack.trim;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import kr.moonshine.datapack.Binding;
 import kr.moonshine.datapack.ComponentSerializer;
+import kr.moonshine.datapack.DatapackWriter;
 import kr.moonshine.datapack.Generator;
 import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
@@ -40,18 +41,13 @@ public final class TrimPattern extends Generator {
     }
 
     @Override
-    public String entryPath(String namespace) {
-        return ENTRY_PATH.formatted(namespace, fileName);
-    }
-
-    @Override
-    protected JsonElement toJson(MinecraftVersion version) {
+    public void writeTo(DatapackWriter writer, String namespace, MinecraftVersion version) {
         JsonObject obj = new JsonObject();
         ASSET_ID.write(obj, assetId);
         DESCRIPTION.write(obj, description);
         TEMPLATE_ITEM.write(obj, templateItem != null ? templateItem.toString() : null, version);
         DECAL.write(obj, decal);
-        return obj;
+        writer.write(ENTRY_PATH.formatted(namespace, fileName), obj);
     }
 
     @Override
@@ -103,7 +99,7 @@ public final class TrimPattern extends Generator {
         }
 
         @Override
-        protected List<RequiredJsonField.Binding> requiredBindings() {
+        protected List<Binding<?>> requiredBindings() {
             return List.of(
                 ASSET_ID.bind(assetId),
                 DESCRIPTION.bind(description)

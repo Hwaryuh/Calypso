@@ -1,5 +1,6 @@
 package kr.moonshine.datapack.dsl
 
+import kr.moonshine.datapack.Datapack
 import kr.moonshine.datapack.DatapackBuilder
 import kr.moonshine.datapack.MinecraftVersion
 
@@ -8,7 +9,7 @@ fun datapack(
     version: MinecraftVersion,
     description: String = "",
     block: DatapackDsl.() -> Unit,
-): DatapackBuilder = DatapackDsl(namespace, version, description).apply(block).builder
+): Datapack = DatapackDsl(namespace, version, description).apply(block).builder.build()
 
 class DatapackDsl(
     namespace: String,

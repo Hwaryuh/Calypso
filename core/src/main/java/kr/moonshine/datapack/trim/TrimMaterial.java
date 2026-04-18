@@ -1,9 +1,10 @@
 package kr.moonshine.datapack.trim;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import kr.moonshine.datapack.Binding;
 import kr.moonshine.datapack.ComponentSerializer;
+import kr.moonshine.datapack.DatapackWriter;
 import kr.moonshine.datapack.Generator;
 import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
@@ -65,12 +66,7 @@ public final class TrimMaterial extends Generator {
     }
 
     @Override
-    public String entryPath(String namespace) {
-        return ENTRY_PATH.formatted(namespace, fileName);
-    }
-
-    @Override
-    protected JsonElement toJson(MinecraftVersion version) {
+    public void writeTo(DatapackWriter writer, String namespace, MinecraftVersion version) {
         JsonObject obj = new JsonObject();
         ASSET_NAME.write(obj, assetName);
         DESCRIPTION.write(obj, description);
@@ -78,7 +74,7 @@ public final class TrimMaterial extends Generator {
         ITEM_MODEL_INDEX.write(obj, itemModelIndex, version);
         OVERRIDE_ARMOR_MATERIALS.write(obj, overrideArmorMaterials, version);
         OVERRIDE_ARMOR_ASSETS.write(obj, overrideArmorAssets, version);
-        return obj;
+        writer.write(ENTRY_PATH.formatted(namespace, fileName), obj);
     }
 
     @Override
@@ -137,7 +133,7 @@ public final class TrimMaterial extends Generator {
         }
 
         @Override
-        protected List<RequiredJsonField.Binding> requiredBindings() {
+        protected List<Binding<?>> requiredBindings() {
             return List.of(
                 ASSET_NAME.bind(assetName),
                 DESCRIPTION.bind(description)

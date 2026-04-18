@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
@@ -38,17 +39,16 @@ public final class DatapackBuilder {
     private ImmutableMap<@NotNull String, byte @NotNull []> entries() {
         ImmutableMap.Builder<@NotNull String, byte @NotNull []> builder = ImmutableMap.builder();
         builder.put("pack.mcmeta", serialize(packMeta.toJson(version)));
+
+        DatapackWriter writer = (path, json) -> builder.put(path, serialize(json));
         for (Generator generator : generators) {
-            builder.put(generator.entryPath(namespace), serialize(generator));
+            generator.writeTo(writer, namespace, version);
         }
+
         return builder.build();
     }
 
-    private byte[] serialize(Generator generator) {
-        return serialize(generator.toJson(version));
-    }
-
-    private byte[] serialize(com.google.gson.JsonElement json) {
+    private byte[] serialize(JsonElement json) {
         return GSON.toJson(json).getBytes(StandardCharsets.UTF_8);
     }
 

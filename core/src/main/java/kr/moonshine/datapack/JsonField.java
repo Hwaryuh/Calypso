@@ -10,22 +10,20 @@ public final class JsonField<T> {
     private final FieldSerializer<T> serializer;
     private final MinecraftVersion since;
     private final MinecraftVersion until;
-    private final boolean required;
 
-    private JsonField(String key, FieldSerializer<T> serializer, MinecraftVersion since, MinecraftVersion until, boolean required) {
+    private JsonField(String key, FieldSerializer<T> serializer, MinecraftVersion since, MinecraftVersion until) {
         this.key = key;
         this.serializer = serializer;
         this.since = since;
         this.until = until;
-        this.required = required;
     }
 
     public static <T> JsonField<T> of(String key, FieldSerializer<T> serializer) {
-        return new JsonField<>(key, serializer, null, null, false);
+        return new JsonField<>(key, serializer, null, null);
     }
 
     public static <T> JsonField<T> of(String key, FieldSerializer<T> serializer, MinecraftVersion since, MinecraftVersion until) {
-        return new JsonField<>(key, serializer, since, until, false);
+        return new JsonField<>(key, serializer, since, until);
     }
 
     public static JsonField<String> ofString(String key) {
@@ -60,10 +58,6 @@ public final class JsonField<T> {
         return of(key, v -> v, since, until);
     }
 
-    public JsonField<T> required() {
-        return new JsonField<>(key, serializer, since, until, true);
-    }
-
     public void write(JsonObject obj, T value) {
         if (value == null) return;
         obj.add(key, serializer.serialize(value));
@@ -75,17 +69,7 @@ public final class JsonField<T> {
         obj.add(key, serializer.serialize(value));
     }
 
-    public void validateRequired(T value) {
-        if (required && value == null) {
-            throw new IllegalStateException("Field '" + key + "' is required");
-        }
-    }
-
     public String key() {
         return key;
-    }
-
-    public boolean isRequired() {
-        return required;
     }
 }

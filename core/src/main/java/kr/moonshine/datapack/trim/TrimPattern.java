@@ -2,10 +2,10 @@ package kr.moonshine.datapack.trim;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import kr.moonshine.datapack.FieldValue;
 import kr.moonshine.datapack.Generator;
 import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
+import kr.moonshine.datapack.RequiredJsonField;
 import kr.moonshine.datapack.ResourceLocation;
 import net.kyori.adventure.text.Component;
 
@@ -15,8 +15,8 @@ public final class TrimPattern extends Generator {
 
     private static final String ENTRY_PATH = "data/%s/trim_pattern/%s.json";
 
-    private static final JsonField<String> ASSET_ID = JsonField.ofString("asset_id").required();
-    private static final JsonField<JsonElement> DESCRIPTION = JsonField.ofElement("description").required();
+    private static final RequiredJsonField<String> ASSET_ID = RequiredJsonField.ofString("asset_id");
+    private static final RequiredJsonField<JsonElement> DESCRIPTION = RequiredJsonField.ofElement("description");
     private static final JsonField<String> TEMPLATE_ITEM =
         JsonField.ofString(
             "template_item",
@@ -96,10 +96,10 @@ public final class TrimPattern extends Generator {
         }
 
         @Override
-        protected List<FieldValue<?>> requiredFieldValues() {
+        protected List<RequiredJsonField.Binding<?>> requiredBindings() {
             return List.of(
-                FieldValue.of(ASSET_ID, assetId != null ? assetId.toString() : null),
-                FieldValue.of(DESCRIPTION, description != null ? serializeComponent(description) : null)
+                ASSET_ID.bind(assetId != null ? assetId.toString() : null),
+                DESCRIPTION.bind(description != null ? serializeComponent(description) : null)
             );
         }
 

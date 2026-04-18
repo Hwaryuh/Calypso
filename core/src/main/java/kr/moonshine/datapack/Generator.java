@@ -21,13 +21,13 @@ public abstract class Generator {
 
     public abstract static class Builder<G extends Generator, B extends Builder<G, B>> {
 
-        protected abstract List<FieldValue<?>> requiredFieldValues();
+        protected abstract List<RequiredJsonField.Binding<?>> requiredBindings();
 
         protected abstract G buildInternal();
 
         public final G build() {
-            for (FieldValue<?> fieldValue : requiredFieldValues()) {
-                fieldValue.validateRequired();
+            for (RequiredJsonField.Binding<?> binding : requiredBindings()) {
+                binding.validate();
             }
             return buildInternal();
         }

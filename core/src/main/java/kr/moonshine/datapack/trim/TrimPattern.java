@@ -103,7 +103,7 @@ public final class TrimPattern extends Generator {
         }
 
         @Override
-        protected List<RequiredJsonField.Binding<?>> requiredBindings() {
+        protected List<RequiredJsonField.Binding> requiredBindings() {
             return List.of(
                 ASSET_ID.bind(assetId),
                 DESCRIPTION.bind(description)

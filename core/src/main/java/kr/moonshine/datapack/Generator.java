@@ -15,12 +15,12 @@ public abstract class Generator {
 
     public abstract static class Builder<G extends Generator, B extends Builder<G, B>> {
 
-        protected abstract List<RequiredJsonField.Binding<?>> requiredBindings();
+        protected abstract List<RequiredJsonField.Binding> requiredBindings();
 
         protected abstract G buildInternal();
 
         public final G build() {
-            for (RequiredJsonField.Binding<?> binding : requiredBindings()) {
+            for (RequiredJsonField.Binding binding : requiredBindings()) {
                 binding.validate();
             }
             return buildInternal();

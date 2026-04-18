@@ -39,28 +39,26 @@ public final class RequiredJsonField<T> {
         obj.add(key, serializer.serialize(value));
     }
 
-    public Binding<T> bind(T value) {
-        return new Binding<>(this, value);
+    public Binding bind(T value) {
+        return new Binding(key, value != null);
     }
 
     public String key() {
         return key;
     }
 
-    public static final class Binding<T> {
+    public static final class Binding {
 
-        private final RequiredJsonField<T> field;
-        private final T value;
+        private final String key;
+        private final boolean present;
 
-        private Binding(RequiredJsonField<T> field, T value) {
-            this.field = field;
-            this.value = value;
+        private Binding(String key, boolean present) {
+            this.key = key;
+            this.present = present;
         }
 
         public void validate() {
-            if (value == null) {
-                throw new IllegalStateException("Required field '" + field.key() + "' is not set");
-            }
+            if (!present) throw new IllegalStateException("Required field '" + key + "' is not set");
         }
     }
 }

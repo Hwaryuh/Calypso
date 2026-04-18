@@ -137,7 +137,7 @@ public final class TrimMaterial extends Generator {
         }
 
         @Override
-        protected List<RequiredJsonField.Binding<?>> requiredBindings() {
+        protected List<RequiredJsonField.Binding> requiredBindings() {
             return List.of(
                 ASSET_NAME.bind(assetName),
                 DESCRIPTION.bind(description)

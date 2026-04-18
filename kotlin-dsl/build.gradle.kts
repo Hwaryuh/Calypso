@@ -7,6 +7,6 @@ kotlin {
 }
 
 dependencies {
-    api(project(":calypso-core"))
+    api(project(":core"))
     compileOnly(libs.adventure.api)
 }

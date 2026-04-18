@@ -1,6 +1,6 @@
 rootProject.name = "Calypso"
 
 include(
-    "calypso-core",
-    "calypso-kotlin-dsl",
+    "core",
+    "kotlin-dsl",
 )

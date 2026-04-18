@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
@@ -20,10 +21,10 @@ public final class DatapackBuilder {
     private final PackMeta packMeta;
     private final List<Generator> generators = Lists.newArrayList();
 
-    private DatapackBuilder(String namespace, MinecraftVersion version, String description) {
+    private DatapackBuilder(String namespace, MinecraftVersion version, PackMeta packMeta) {
         this.namespace = namespace;
         this.version = version;
-        this.packMeta = PackMeta.of(description);
+        this.packMeta = packMeta;
     }
 
     public DatapackBuilder add(Generator generator) {
@@ -53,10 +54,14 @@ public final class DatapackBuilder {
     }
 
     public static DatapackBuilder of(String namespace, MinecraftVersion version, String description) {
-        return new DatapackBuilder(namespace, version, description);
+        return new DatapackBuilder(namespace, version, PackMeta.of(description));
+    }
+
+    public static DatapackBuilder of(String namespace, MinecraftVersion version, Component description) {
+        return new DatapackBuilder(namespace, version, PackMeta.of(description));
     }
 
     public static DatapackBuilder of(String namespace, MinecraftVersion version) {
-        return new DatapackBuilder(namespace, version, "");
+        return new DatapackBuilder(namespace, version, PackMeta.of(Component.empty()));
     }
 }

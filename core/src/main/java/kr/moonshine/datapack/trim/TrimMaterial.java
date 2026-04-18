@@ -3,6 +3,7 @@ package kr.moonshine.datapack.trim;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import kr.moonshine.datapack.ComponentSerializer;
 import kr.moonshine.datapack.Generator;
 import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
@@ -18,19 +19,12 @@ public final class TrimMaterial extends Generator {
     private static final String ENTRY_PATH = "data/%s/trim_material/%s.json";
 
     private static final RequiredJsonField<String> ASSET_NAME = RequiredJsonField.ofString("asset_name");
-    private static final RequiredJsonField<JsonElement> DESCRIPTION = RequiredJsonField.ofElement("description");
+    private static final RequiredJsonField<Component> DESCRIPTION =
+        RequiredJsonField.of("description", ComponentSerializer::serialize);
     private static final JsonField<String> INGREDIENT =
-        JsonField.ofString(
-            "ingredient",
-            null,
-            MinecraftVersion.V1_21_5
-        );
+        JsonField.ofString("ingredient", null, MinecraftVersion.V1_21_5);
     private static final JsonField<Number> ITEM_MODEL_INDEX =
-        JsonField.ofNumber(
-            "item_model_index",
-            null,
-            MinecraftVersion.V1_21_4
-        );
+        JsonField.ofNumber("item_model_index", null, MinecraftVersion.V1_21_4);
     private static final JsonField<Map<ArmorMaterial, String>> OVERRIDE_ARMOR_MATERIALS =
         JsonField.of(
             "override_armor_materials",
@@ -79,7 +73,7 @@ public final class TrimMaterial extends Generator {
     protected JsonElement toJson(MinecraftVersion version) {
         JsonObject obj = new JsonObject();
         ASSET_NAME.write(obj, assetName);
-        DESCRIPTION.write(obj, serializeComponent(description));
+        DESCRIPTION.write(obj, description);
         INGREDIENT.write(obj, ingredient != null ? ingredient.toString() : null, version);
         ITEM_MODEL_INDEX.write(obj, itemModelIndex, version);
         OVERRIDE_ARMOR_MATERIALS.write(obj, overrideArmorMaterials, version);
@@ -90,9 +84,7 @@ public final class TrimMaterial extends Generator {
     @Override
     public void validate(MinecraftVersion version) {
         if (ingredient != null && ingredient.equals(ResourceLocation.minecraft("air"))) {
-            throw new IllegalStateException(
-                "ingredient 'minecraft:air' is not allowed"
-            );
+            throw new IllegalStateException("ingredient 'minecraft:air' is not allowed");
         }
     }
 
@@ -148,7 +140,7 @@ public final class TrimMaterial extends Generator {
         protected List<RequiredJsonField.Binding<?>> requiredBindings() {
             return List.of(
                 ASSET_NAME.bind(assetName),
-                DESCRIPTION.bind(description != null ? serializeComponent(description) : null)
+                DESCRIPTION.bind(description)
             );
         }
 

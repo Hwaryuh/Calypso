@@ -2,6 +2,8 @@ package kr.moonshine.datapack.trim;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import kr.moonshine.datapack.ComponentSerializer;
 import kr.moonshine.datapack.Generator;
 import kr.moonshine.datapack.JsonField;
 import kr.moonshine.datapack.MinecraftVersion;
@@ -15,14 +17,12 @@ public final class TrimPattern extends Generator {
 
     private static final String ENTRY_PATH = "data/%s/trim_pattern/%s.json";
 
-    private static final RequiredJsonField<String> ASSET_ID = RequiredJsonField.ofString("asset_id");
-    private static final RequiredJsonField<JsonElement> DESCRIPTION = RequiredJsonField.ofElement("description");
+    private static final RequiredJsonField<ResourceLocation> ASSET_ID =
+        RequiredJsonField.of("asset_id", location -> new JsonPrimitive(location.toString()));
+    private static final RequiredJsonField<Component> DESCRIPTION =
+        RequiredJsonField.of("description", ComponentSerializer::serialize);
     private static final JsonField<String> TEMPLATE_ITEM =
-        JsonField.ofString(
-            "template_item",
-            null,
-            MinecraftVersion.V1_21_5
-        );
+        JsonField.ofString("template_item", null, MinecraftVersion.V1_21_5);
     private static final JsonField<Boolean> DECAL = JsonField.ofBoolean("decal");
 
     private final String fileName;
@@ -47,8 +47,8 @@ public final class TrimPattern extends Generator {
     @Override
     protected JsonElement toJson(MinecraftVersion version) {
         JsonObject obj = new JsonObject();
-        ASSET_ID.write(obj, assetId != null ? assetId.toString() : null);
-        DESCRIPTION.write(obj, serializeComponent(description));
+        ASSET_ID.write(obj, assetId);
+        DESCRIPTION.write(obj, description);
         TEMPLATE_ITEM.write(obj, templateItem != null ? templateItem.toString() : null, version);
         DECAL.write(obj, decal);
         return obj;
@@ -57,9 +57,7 @@ public final class TrimPattern extends Generator {
     @Override
     public void validate(MinecraftVersion version) {
         if (templateItem != null && templateItem.equals(ResourceLocation.minecraft("air"))) {
-            throw new IllegalStateException(
-                "template_item 'minecraft:air' is not allowed"
-            );
+            throw new IllegalStateException("template_item 'minecraft:air' is not allowed");
         }
     }
 
@@ -107,8 +105,8 @@ public final class TrimPattern extends Generator {
         @Override
         protected List<RequiredJsonField.Binding<?>> requiredBindings() {
             return List.of(
-                ASSET_ID.bind(assetId != null ? assetId.toString() : null),
-                DESCRIPTION.bind(description != null ? serializeComponent(description) : null)
+                ASSET_ID.bind(assetId),
+                DESCRIPTION.bind(description)
             );
         }
 

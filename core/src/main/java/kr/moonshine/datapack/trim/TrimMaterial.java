@@ -87,6 +87,15 @@ public final class TrimMaterial extends Generator {
         return obj;
     }
 
+    @Override
+    public void validate(MinecraftVersion version) {
+        if (ingredient != null && ingredient.equals(ResourceLocation.minecraft("air"))) {
+            throw new IllegalStateException(
+                "ingredient 'minecraft:air' is not allowed"
+            );
+        }
+    }
+
     public static Builder builder(String fileName) {
         return new Builder(fileName);
     }

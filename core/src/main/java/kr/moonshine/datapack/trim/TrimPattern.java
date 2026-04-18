@@ -54,6 +54,15 @@ public final class TrimPattern extends Generator {
         return obj;
     }
 
+    @Override
+    public void validate(MinecraftVersion version) {
+        if (templateItem != null && templateItem.equals(ResourceLocation.minecraft("air"))) {
+            throw new IllegalStateException(
+                "template_item 'minecraft:air' is not allowed"
+            );
+        }
+    }
+
     public static Builder builder(String fileName) {
         return new Builder(fileName);
     }

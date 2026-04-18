@@ -22,7 +22,6 @@ datapack.toFiles(path);     // write to files
 ### Kotlin DSL
 
 ```kotlin
-val datapack = datapack("your_namespace", MinecraftVersion.V1_21_5) {
     trimMaterial("ruby") {
         assetName("ruby")
         description(Component.text("Ruby"))

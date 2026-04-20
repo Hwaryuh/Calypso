@@ -6,7 +6,6 @@ import kr.moonshine.datapack.ResourceLocation;
 import kr.moonshine.datapack.trim.TrimMaterial;
 import kr.moonshine.datapack.trim.TrimPattern;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.nio.file.Path;
 
@@ -28,7 +27,7 @@ public class Main {
                 .assetId(ResourceLocation.of("test", "silence"))
                 .description(Component.text("Silence"))
                 .build())
-            .build();
+            .create();
 
         datapack.toFiles(Path.of("output"));
     }

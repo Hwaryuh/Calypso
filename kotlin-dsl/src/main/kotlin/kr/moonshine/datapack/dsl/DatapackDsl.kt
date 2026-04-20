@@ -9,7 +9,7 @@ fun datapack(
     version: MinecraftVersion,
     description: String = "",
     block: DatapackDsl.() -> Unit,
-): Datapack = DatapackDsl(namespace, version, description).apply(block).builder.build()
+): Datapack = DatapackDsl(namespace, version, description).apply(block).builder.create()
 
 class DatapackDsl(
     namespace: String,

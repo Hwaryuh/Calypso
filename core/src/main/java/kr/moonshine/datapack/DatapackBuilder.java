@@ -33,7 +33,7 @@ public final class DatapackBuilder {
         return this;
     }
 
-    public Datapack build() {
+    public Datapack create() {
         return new Datapack(entries());
     }
 

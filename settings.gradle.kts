@@ -4,5 +4,5 @@ include(
     "core",
     "kotlin-dsl",
 
-    "test"
+    "test",
 )

@@ -7,6 +7,9 @@ import java.util.Map;
 
 public final class DatapackFormats {
 
+    private DatapackFormats() {
+    }
+
     private static final Map<MinecraftVersion, DatapackFormat> MAP = Maps.newHashMap();
 
     static {
@@ -20,8 +23,6 @@ public final class DatapackFormats {
         MAP.put(MinecraftVersion.V1_21_11, DatapackFormat.of(94, 1));
     }
 
-    private DatapackFormats() {
-    }
 
     public static @NotNull DatapackFormat of(@NotNull MinecraftVersion version) {
         DatapackFormat format = MAP.get(version);

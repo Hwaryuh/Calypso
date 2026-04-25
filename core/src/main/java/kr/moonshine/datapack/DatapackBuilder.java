@@ -12,19 +12,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public final class DatapackBuilder {
-    private static final Gson GSON = new GsonBuilder()
-        .setPrettyPrinting()
-        .create();
+    private static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON_COMPACT = new Gson();
 
     private final String namespace;
     private final MinecraftVersion version;
     private final PackMeta packMeta;
     private final List<Generator> generators = Lists.newArrayList();
+    private boolean prettyPrint = true;
 
     private DatapackBuilder(String namespace, MinecraftVersion version, PackMeta packMeta) {
         this.namespace = namespace;
         this.version = version;
         this.packMeta = packMeta;
+    }
+
+    /**
+     * @param prettyPrint whether to pretty-print JSON output (default: {@code true})
+     */
+    public DatapackBuilder prettyPrint(boolean prettyPrint) {
+        this.prettyPrint = prettyPrint;
+        return this;
     }
 
     public DatapackBuilder add(Generator generator) {
@@ -33,7 +41,7 @@ public final class DatapackBuilder {
         return this;
     }
 
-    public Datapack create() {
+    public Datapack build() {
         return new Datapack(entries());
     }
 
@@ -50,7 +58,7 @@ public final class DatapackBuilder {
     }
 
     private byte[] serialize(JsonElement json) {
-        return GSON.toJson(json).getBytes(StandardCharsets.UTF_8);
+        return (prettyPrint ? GSON_PRETTY : GSON_COMPACT).toJson(json).getBytes(StandardCharsets.UTF_8);
     }
 
     public static DatapackBuilder of(String namespace, MinecraftVersion version, String description) {
